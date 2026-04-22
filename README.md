@@ -13,6 +13,7 @@ This repository currently provides a small but working C++ agent/runtime foundat
 - concrete `OpenRouterProvider` implementation
 - concrete `StubProvider` for local testing
 - concrete `InMemoryStorage` adapter
+- concrete `JsonFileStorage` adapter
 - reusable libcurl-based `CurlHttpClient`
 
 ## Planned direction
@@ -67,6 +68,7 @@ Current concrete helpers added for local development:
 
 - `StubProvider`
 - `InMemoryStorage`
+- `JsonFileStorage`
 - `examples/basic.cpp`
 
 ## Tests
@@ -75,11 +77,30 @@ A small smoke test target is included:
 
 - `tiny_hyper_router_basic_smoke`
 
-After building, you can run tests with:
+After building, you can run normal local tests with:
 
 ```powershell
 ctest --test-dir out/build/x64-debug --output-on-failure
 ```
+
+This does not run the live OpenRouter manual test unless you configured with `-DTHR_ENABLE_LIVE_TESTS=ON`.
+
+## Storage adapters
+
+Current storage adapters:
+
+- `InMemoryStorage`
+- `JsonFileStorage`
+
+`JsonFileStorage` stores each full session transcript as structured JSON, including:
+
+- messages
+- tool calls
+- reasoning metadata and raw reasoning items
+- session metadata
+- last run status
+
+This preserves OpenRouter reasoning replay data across process restarts.
 
 ## Convenience headers
 
@@ -141,6 +162,14 @@ The OpenRouter provider now supports basic reasoning configuration and parsing:
 A manual live test executable is available:
 
 - `tiny_hyper_router_openrouter_live_manual`
+
+It is intentionally not registered in default `ctest` runs.
+
+To opt in during configure:
+
+```powershell
+cmake --preset x64-debug -DTHR_ENABLE_LIVE_TESTS=ON
+```
 
 It writes request/response logs as JSON under:
 

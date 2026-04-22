@@ -8,6 +8,8 @@ endif()
 
 project(tiny-hyper-router VERSION 0.1.0 LANGUAGES CXX)
 
+option(THR_ENABLE_LIVE_TESTS "Enable live API-backed tests" OFF)
+
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(CURL REQUIRED)
 
@@ -17,6 +19,8 @@ add_library(tiny_hyper_router
     src/http/client.cpp
     src/http/curl_http_client.cpp
     src/storage/in_memory_storage.cpp
+    src/storage/json_file_storage.cpp
+    src/storage/json_serialization.cpp
     src/providers/stub/provider.cpp
     src/providers/openrouter/items.cpp
     src/providers/openrouter/provider.cpp
@@ -77,6 +81,20 @@ add_test(
     COMMAND tiny_hyper_router_basic_smoke
 )
 
+add_executable(tiny_hyper_router_json_file_storage_smoke
+    tests/json_file_storage_smoke.cpp
+)
+
+target_link_libraries(tiny_hyper_router_json_file_storage_smoke
+    PRIVATE
+        tiny_hyper_router
+)
+
+add_test(
+    NAME json_file_storage_smoke
+    COMMAND tiny_hyper_router_json_file_storage_smoke
+)
+
 add_executable(tiny_hyper_router_openrouter_mapping_smoke
     tests/openrouter_mapping_smoke.cpp
 )
@@ -100,7 +118,9 @@ target_link_libraries(tiny_hyper_router_openrouter_live_manual
         tiny_hyper_router
 )
 
-add_test(
-    NAME openrouter_live_manual
-    COMMAND tiny_hyper_router_openrouter_live_manual
-)
+if(THR_ENABLE_LIVE_TESTS)
+  add_test(
+      NAME openrouter_live_manual
+      COMMAND tiny_hyper_router_openrouter_live_manual
+  )
+endif()
