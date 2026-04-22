@@ -1,0 +1,192 @@
+# tiny-hyper-router
+
+Native C++ scaffolding for a transcript-first agent runtime inspired by `hyper-router`.
+
+## Current scope
+
+This repository currently provides a small but working C++ agent/runtime foundation with:
+
+- core runtime abstractions
+- provider abstraction
+- storage abstraction
+- shared runtime/message/tool types
+- concrete `OpenRouterProvider` implementation
+- concrete `StubProvider` for local testing
+- concrete `InMemoryStorage` adapter
+- reusable libcurl-based `CurlHttpClient`
+
+## Planned direction
+
+Initial MVP target:
+
+- OpenRouter provider only
+- direct HTTP calls
+- non-streaming
+- transcript-based continuation
+- tool calling
+
+## Layout
+
+```txt
+include/tiny_hyper_router/
+  tiny_hyper_router.hpp
+  core/
+    agent.hpp
+    providers.hpp
+    runtime.hpp
+    storage.hpp
+    tool.hpp
+    types.hpp
+  storage/
+    types.hpp
+src/
+  core/
+    runtime.cpp
+    types.cpp
+```
+
+## Build
+
+Dependencies are managed with `vcpkg`.
+
+Required now:
+
+- `nlohmann-json`
+- `curl`
+
+Example configure/build:
+
+```powershell
+cmake --preset x64-debug
+cmake --build --preset x64-debug
+```
+
+## Included development helpers
+
+Current concrete helpers added for local development:
+
+- `StubProvider`
+- `InMemoryStorage`
+- `examples/basic.cpp`
+
+## Tests
+
+A small smoke test target is included:
+
+- `tiny_hyper_router_basic_smoke`
+
+After building, you can run tests with:
+
+```powershell
+ctest --test-dir out/build/x64-debug --output-on-failure
+```
+
+## Convenience headers
+
+Added convenience headers similar to the TypeScript package-level export style:
+
+- `tiny_hyper_router/providers/index.hpp`
+- `tiny_hyper_router/providers/stub/index.hpp`
+- `tiny_hyper_router/providers/openrouter/index.hpp`
+- `tiny_hyper_router/storage/index.hpp`
+
+## OpenRouter provider
+
+The project now includes a working non-streaming OpenRouter Responses API provider with:
+
+- provider options/types
+- transcript-to-input-item mapping
+- tool definition mapping
+- request body building
+- response body parsing
+- generated image extraction
+- reusable libcurl HTTP transport
+
+## Shared HTTP transport
+
+The transport abstraction has been moved to a shared layer for future multi-provider support:
+
+- `tiny_hyper_router/http/client.hpp`
+- `src/http/client.cpp`
+
+Providers are responsible for:
+
+- building provider-specific request JSON
+- constructing provider-specific headers
+- parsing provider-specific response JSON
+
+The shared HTTP layer is responsible only for generic request/response transport.
+
+## Curl HTTP client
+
+A reusable provider-agnostic libcurl transport is now included:
+
+- `tiny_hyper_router/http/curl_http_client.hpp`
+- `src/http/curl_http_client.cpp`
+
+This implements the shared `HttpClient` abstraction and can be reused by multiple providers.
+
+## OpenRouter reasoning
+
+The OpenRouter provider now supports basic reasoning configuration and parsing:
+
+- request `reasoning` object
+- request `include: ["reasoning.encrypted_content"]`
+- parsed `output` reasoning blocks
+- parsed `usage.output_tokens_details.reasoning_tokens`
+- replaying persisted reasoning items back into subsequent request history
+
+## Manual live tests
+
+A manual live test executable is available:
+
+- `tiny_hyper_router_openrouter_live_manual`
+
+It writes request/response logs as JSON under:
+
+- `out/openrouter-live-manual/`
+
+Reasoning metadata is now also attached to assistant transcript messages for persistence, including:
+
+- reasoning item `id`
+- `encrypted_content`
+- `format`
+- `status`
+- `summary`
+
+The live test also writes explicit reasoning replay proof files for the second request in tool flows:
+
+- `single_tool_second_request_reasoning_replay_check.json`
+- `tool_chain_second_request_reasoning_replay_check.json`
+
+The tool-based live scenarios now return intentionally large deterministic tool payloads so you can inspect:
+
+- transcript persistence under larger tool outputs
+- replay/transcription integrity
+- prompt-size/cache-threshold behavior
+
+### Running from Windows Developer Command Prompt
+
+Use `set`, not PowerShell `$env:` syntax:
+
+```bat
+set OPENROUTER_API_KEY=your_key_here
+set OPENROUTER_MODEL=openai/o3
+set OPENROUTER_LIVE_TOOL_TEXT_REPEAT=400
+out\build\x64-debug\tiny_hyper_router_openrouter_live_manual.exe
+```
+
+### Running from PowerShell
+
+```powershell
+$env:OPENROUTER_API_KEY="your_key_here"
+$env:OPENROUTER_MODEL="openai/o3"
+$env:OPENROUTER_LIVE_TOOL_TEXT_REPEAT="400"
+.\out\build\x64-debug\tiny_hyper_router_openrouter_live_manual.exe
+```
+
+Environment variables:
+
+- `OPENROUTER_API_KEY`: required
+- `OPENROUTER_MODEL`: optional, defaults to `openai/o4-mini`
+- `OPENROUTER_LIVE_TOOL_TEXT_REPEAT`: optional, defaults to `160`

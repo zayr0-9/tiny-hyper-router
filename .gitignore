@@ -1,0 +1,62 @@
+# Build outputs
+/out/
+/build/
+/bin/
+/lib/
+
+# CMake
+/CMakeUserPresets.json
+/CMakeCache.txt
+/CMakeFiles/
+/cmake-install.cmake
+/CTestTestfile.cmake
+/Testing/
+/install_manifest.txt
+/compile_commands.json
+
+# Ninja / MSBuild
+/.ninja_deps
+/.ninja_log
+*.ninja
+*.vcxproj*
+*.sln
+*.vc.db
+*.VC.db
+
+# Visual Studio / VS Code
+/.vs/
+.vscode/
+*.VC.opendb
+*.suo
+*.user
+*.userosscache
+*.sdf
+*.opensdf
+*.ipch
+
+# vcpkg installed artifacts
+/vcpkg_installed/
+
+# Logs / temp
+*.log
+*.tmp
+*.temp
+*.obj
+*.o
+*.pdb
+*.ilk
+*.idb
+*.tlog
+*.lastbuildstate
+*.recipe
+*.exe
+*.dll
+*.lib
+*.exp
+
+# Test output / manual live logs
+/out/openrouter-live*/
+
+# Environment / secrets
+.env
+.env.*
