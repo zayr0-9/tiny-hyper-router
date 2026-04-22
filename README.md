@@ -14,6 +14,7 @@ This repository currently provides a small but working C++ agent/runtime foundat
 - concrete `StubProvider` for local testing
 - concrete `InMemoryStorage` adapter
 - concrete `JsonFileStorage` adapter
+- optional `SqliteStorage` adapter
 - reusable libcurl-based `CurlHttpClient`
 
 ## Planned direction
@@ -55,6 +56,10 @@ Required now:
 - `nlohmann-json`
 - `curl`
 
+Optional feature dependency:
+
+- `sqlite3` for `SqliteStorage`
+
 Example configure/build:
 
 ```powershell
@@ -69,6 +74,7 @@ Current concrete helpers added for local development:
 - `StubProvider`
 - `InMemoryStorage`
 - `JsonFileStorage`
+- `SqliteStorage` when SQLite support is enabled
 - `examples/basic.cpp`
 
 ## Tests
@@ -85,12 +91,15 @@ ctest --test-dir out/build/x64-debug --output-on-failure
 
 This does not run the live OpenRouter manual test unless you configured with `-DTHR_ENABLE_LIVE_TESTS=ON`.
 
+SQLite storage is also opt-in and requires configuring with `-DTHR_ENABLE_SQLITE_STORAGE=ON`.
+
 ## Storage adapters
 
 Current storage adapters:
 
 - `InMemoryStorage`
 - `JsonFileStorage`
+- `SqliteStorage` when SQLite support is enabled
 
 `JsonFileStorage` stores each full session transcript as structured JSON, including:
 
@@ -101,6 +110,14 @@ Current storage adapters:
 - last run status
 
 This preserves OpenRouter reasoning replay data across process restarts.
+
+`SqliteStorage` stores the same structured transcript data in a single SQLite database file, using JSON payload columns for messages, metadata, and last run state.
+
+To enable it at configure time:
+
+```powershell
+cmake --preset x64-debug -DTHR_ENABLE_SQLITE_STORAGE=ON
+```
 
 ## Convenience headers
 

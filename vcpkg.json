@@ -5,5 +5,13 @@
   "dependencies": [
     "curl",
     "nlohmann-json"
-  ]
+  ],
+  "features": {
+    "sqlite-storage": {
+      "description": "Enable SQLite-backed storage adapter",
+      "dependencies": [
+        "sqlite3"
+      ]
+    }
+  }
 }
