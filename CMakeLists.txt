@@ -23,6 +23,8 @@ add_library(tiny_hyper_router
     src/core/types.cpp
     src/http/client.cpp
     src/http/curl_http_client.cpp
+    src/embed/client.cpp
+    src/embed/c_api.cpp
     src/storage/in_memory_storage.cpp
     src/storage/json_file_storage.cpp
     src/storage/json_serialization.cpp
@@ -163,3 +165,17 @@ if(THR_ENABLE_LIVE_TESTS)
       COMMAND tiny_hyper_router_openrouter_live_manual
   )
 endif()
+
+add_executable(tiny_hyper_router_embed_api_smoke
+    tests/embed_api_smoke.cpp
+)
+
+target_link_libraries(tiny_hyper_router_embed_api_smoke
+    PRIVATE
+        tiny_hyper_router
+)
+
+add_test(
+    NAME embed_api_smoke
+    COMMAND tiny_hyper_router_embed_api_smoke
+)

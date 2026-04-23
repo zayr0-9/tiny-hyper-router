@@ -8,5 +8,6 @@
 #include "tiny_hyper_router/core/types.hpp"
 #include "tiny_hyper_router/http/client.hpp"
 #include "tiny_hyper_router/http/curl_http_client.hpp"
+#include "tiny_hyper_router/embed/index.hpp"
 #include "tiny_hyper_router/providers/index.hpp"
 #include "tiny_hyper_router/storage/index.hpp"

@@ -2,6 +2,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "tiny_hyper_router/core/runtime.hpp"
 #include "tiny_hyper_router/storage/types.hpp"
 
 namespace tiny_hyper_router {
@@ -23,5 +24,8 @@ void from_json(const nlohmann::json& json, SessionMetadata& value);
 
 void to_json(nlohmann::json& json, const RunRecord& value);
 void from_json(const nlohmann::json& json, RunRecord& value);
+
+void to_json(nlohmann::json& json, const RuntimeResult& value);
+void from_json(const nlohmann::json& json, RuntimeResult& value);
 
 }  // namespace tiny_hyper_router

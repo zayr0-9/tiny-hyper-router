@@ -246,4 +246,20 @@ void from_json(const nlohmann::json& json, RunRecord& value) {
   value.status = run_status_from_string(json.value("status", std::string{"completed"}));
 }
 
+void to_json(nlohmann::json& json, const RuntimeResult& value) {
+  json = {
+      {"status", run_status_to_string(value.status)},
+      {"messages", value.messages},
+  };
+}
+
+void from_json(const nlohmann::json& json, RuntimeResult& value) {
+  value = RuntimeResult{};
+  value.status = run_status_from_string(json.value("status", std::string{"completed"}));
+
+  if (json.contains("messages") && json.at("messages").is_array()) {
+    value.messages = json.at("messages").get<std::vector<Message>>();
+  }
+}
+
 }  // namespace tiny_hyper_router

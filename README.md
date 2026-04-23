@@ -67,6 +67,12 @@ cmake --preset x64-debug
 cmake --build --preset x64-debug
 ```
 
+If you get any issues run
+
+```powershell
+cmake --fresh --preset x64-debug
+```
+
 ## Included development helpers
 
 Current concrete helpers added for local development:
@@ -236,3 +242,59 @@ Environment variables:
 - `OPENROUTER_API_KEY`: required
 - `OPENROUTER_MODEL`: optional, defaults to `openai/o4-mini`
 - `OPENROUTER_LIVE_TOOL_TEXT_REPEAT`: optional, defaults to `160`
+
+## Embedding API
+
+A handle-based embedding layer is now included for host apps, including Android and iOS.
+
+Headers:
+
+- `tiny_hyper_router/embed/client.hpp`
+- `tiny_hyper_router/embed/c_api.h`
+
+High-level native wrapper:
+
+- `tiny_hyper_router::embed::Client`
+
+C ABI for JNI / Objective-C++ and other FFI bridging:
+
+- `thr_create_client_from_json`
+- `thr_destroy_client`
+- `thr_send_message_json`
+- `thr_get_session_json`
+- `thr_free_string`
+
+Design notes:
+
+- the client handle owns agent config, provider, storage, and runtime
+- persistent session continuity still comes from storage keyed by `session_id`
+- tool execution remains internal C++ only
+- JSON strings are used at the embedding boundary for simpler host interop
+
+Example config JSON:
+
+```json
+{
+  "agent_name": "embed-agent",
+  "instructions": "You are helpful.",
+  "model": "openai/o4-mini",
+  "api_key": "your_key_here",
+  "storage_directory": "/app/sandbox/thr"
+}
+```
+
+Example request JSON:
+
+```json
+{
+  "session_id": "chat-1",
+  "input": "Hello from embed host",
+  "max_steps": 5,
+  "ephemeral": false
+}
+```
+
+For local smoke testing, you can configure the embed client to use:
+
+- `use_stub_provider: true`
+- `use_in_memory_storage: true`
